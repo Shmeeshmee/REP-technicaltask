@@ -18,6 +18,7 @@ func NewHandler(r *Repository) *Handler {
 	return &Handler{r: r}
 }
 
+// DeleteByID - returns the pack by the provided ID
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	packID := vars["pack_id"]
@@ -36,6 +37,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		))
 }
 
+// DeleteByID - sets a new pack with the input value
 func (h *Handler) Set(w http.ResponseWriter, r *http.Request) {
 	var (
 		p Pack
@@ -55,11 +57,6 @@ func (h *Handler) Set(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.r.Set(p)
-
-	// 	if redis.ErrorResponse(w, r, err, 400) {
-	// 	return
-	// }
-
 	redis.JsonResponse(
 		w,
 		redis.CreateResponse(
@@ -83,6 +80,7 @@ func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 		))
 }
 
+// DeleteByID - deletes the pack by the provided ID
 func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	packID := vars["pack_id"]

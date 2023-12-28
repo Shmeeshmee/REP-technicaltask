@@ -30,10 +30,11 @@ func routes(cfg *config.Config, r *mux.Router) {
 		fmt.Sprintf("/%s", "pack"),
 		addDefaultHeaders(h.ph.Set),
 	).Methods("POST")
+	// had issues with CORS policy so I switched the method to GET
 	r.HandleFunc(
-		fmt.Sprintf("/%s/{pack_id}", "pack"),
+		fmt.Sprintf("/%s/{pack_id}", "delete_pack"),
 		addDefaultHeaders(h.ph.DeleteByID),
-	).Methods("DELETE")
+	).Methods("GET")
 
 	r.HandleFunc(
 		fmt.Sprintf("/%s/{amount}", "calculate"),
