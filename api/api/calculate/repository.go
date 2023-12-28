@@ -22,8 +22,8 @@ func (r *Repository) Calculate(amount int) ([]string, error) {
 		tmp, _ := strconv.Atoi(v)
 		val = append(val, tmp)
 	}
-	
+
 	sort.Ints(val)
 
-	return doAll(amount, val), nil
+	return calculator(amount, val), nil
 }

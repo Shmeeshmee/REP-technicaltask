@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"re-parteners-tech-task/redis"
+
 	"github.com/gorilla/mux"
 )
 
@@ -20,18 +22,18 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	packID := vars["pack_id"]
 	packKey, err := h.r.GetByKey(packID)
-	if err != nil {
+	if redis.ErrorResponse(w, r, err, 400) {
 		return
 	}
 
-	jsonResponse, err := json.Marshal(packKey)
-	if err != nil {
-		fmt.Println("cannot marhal the response, ", err)
-	}
-	_, err = w.Write(jsonResponse)
-	if err != nil {
-		fmt.Println("cannot write the json response, ", err)
-	}
+	redis.JsonResponse(
+		w,
+		redis.CreateResponse(
+			packKey,
+			fmt.Sprintf("retrieved the Pack object with ID [%s]", packID),
+			nil,
+			200,
+		))
 }
 
 func (h *Handler) Set(w http.ResponseWriter, r *http.Request) {
@@ -41,46 +43,60 @@ func (h *Handler) Set(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if exists(p.Size) {
-		w.WriteHeader(http.StatusBadRequest)
-		_, err := w.Write([]byte("pack size already exists"))
-		if err != nil {
-			fmt.Println("cannot write the json response, ", err)
-		}
+		redis.JsonResponse(
+			w,
+			redis.CreateResponse(
+				nil,
+				"pack size already exists",
+				fmt.Errorf("pack size already exists"),
+				400,
+			))
 		return
 	}
 
 	h.r.Set(p)
-	fmt.Println("entered Set pack")
 
-	_, err := w.Write([]byte(fmt.Sprintf("value of [%+v] has been set", p)))
-	if err != nil {
-		fmt.Println("cannot write the json response, ", err)
-	}
+	// 	if redis.ErrorResponse(w, r, err, 400) {
+	// 	return
+	// }
+
+	redis.JsonResponse(
+		w,
+		redis.CreateResponse(
+			p,
+			fmt.Sprintf("set the Pack object [%v]", p),
+			nil,
+			200,
+		))
 }
 
 func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	res := h.r.GetAll()
 
-	jsonResponse, err := json.Marshal(res)
-	if err != nil {
-		fmt.Println("cannot marhal the response, ", err)
-	}
-	_, err = w.Write(jsonResponse)
-	if err != nil {
-		fmt.Println("cannot write the json response, ", err)
-	}
+	redis.JsonResponse(
+		w,
+		redis.CreateResponse(
+			res,
+			"successfully retrieved all pack objects",
+			nil,
+			200,
+		))
 }
 
 func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	packID := vars["pack_id"]
 	err := h.r.DeleteByID(packID)
-	if err != nil {
+	if redis.ErrorResponse(w, r, err, 400) {
 		return
 	}
 
-	_, err = w.Write([]byte(fmt.Sprintf("value of [%s] has been deleted", packID)))
-	if err != nil {
-		fmt.Println("cannot write the json response, ", err)
-	}
+	redis.JsonResponse(
+		w,
+		redis.CreateResponse(
+			nil,
+			fmt.Sprintf("successfully deleted pack with ID [%s]", packID),
+			nil,
+			200,
+		))
 }

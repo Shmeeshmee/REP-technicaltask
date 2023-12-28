@@ -32,8 +32,15 @@ func (r *Repository) Set(p Pack) {
 	incrID()
 }
 
-func (r *Repository) GetAll() map[string]string {
-	return redis.GetValues(PackKey)
+func (r *Repository) GetAll() (res []Elem) {
+	arr := redis.GetValues(PackKey)
+	for k, v := range arr {
+		res = append(res, Elem{
+			Key:   k,
+			Value: v,
+		})
+	}
+	return
 }
 
 func (r *Repository) DeleteByID(packID string) error {

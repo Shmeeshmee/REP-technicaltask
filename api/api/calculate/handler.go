@@ -1,9 +1,9 @@
 package calculate
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
+	"re-parteners-tech-task/redis"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -27,16 +27,16 @@ func (h *Handler) Calculate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vals, err := h.r.Calculate(iAmount)
-	if err != nil {
+	if redis.ErrorResponse(w, r, err, 400) {
 		return
 	}
 
-	jsonResponse, err := json.Marshal(vals)
-	if err != nil {
-		fmt.Println("cannot marhal the response, ", err)
-	}
-	_, err = w.Write(jsonResponse)
-	if err != nil {
-		fmt.Println("cannot write the json response, ", err)
-	}
+	redis.JsonResponse(
+		w,
+		redis.CreateResponse(
+			vals,
+			fmt.Sprintf("successfully calculated for input [%d]", iAmount),
+			nil,
+			200,
+		))
 }

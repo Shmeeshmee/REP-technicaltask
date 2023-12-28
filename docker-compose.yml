@@ -2,12 +2,6 @@ version: '3'
 services:
   redis:
     image: 'redis:latest'
-  # postgres:
-  #   image: 'postgres:latest'
-  #   environment:
-  #     - POSTGRES_DB=pack
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=password
   api:
     build:
       context: ./api
@@ -25,18 +19,12 @@ services:
       - DEBUG_LEVEL=Debug
     ports:
       - 8082:8082
-  # migrate:
-  #   build:
-  #     context: ./migrations
-  #     dockerfile: Dockerfile.dev
-  #   restart: on-failure
-  #   depends_on:
-  #     - postgres
-  #   environment:
-  #     - DB_HOST=postgres
-  #     - DB_USER=postgres
-  #     - DB_PASSWORD=password
-  #     - DB_NAME=pack
-  #     - DB_SSL=disable
-  #   volumes:
-  #     - ./migrations:/usr/app/migrations
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    volumes:
+      - /usr/app/node_modules
+      - ./server:/usr/app

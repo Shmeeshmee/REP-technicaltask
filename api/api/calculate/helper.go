@@ -3,56 +3,33 @@ package calculate
 import (
 	"fmt"
 	"math"
-	"sort"
 )
 
-// func init() {
-// 	redis.Set("init", PackKey, 1)
-// }
+func calculator(target int, numbers []int) (result []string) {
+	result = exact(target, numbers)
 
-// func incrID() {
-// 	redis.Incr("init", PackKey)
-// }
-
-// func setPack(value float64) {
-// 	ID := redis.Get("init", PackKey)
-// 	redis.Set(PackKey, ID, value)
-// }
-
-// Within the constraints of Rule 1 above, send out no more items than necessary to
-// fulfil the order.
-
-func doAll(target int, numbers []int) (result []string) {
-	result = two(target, numbers)
 	if len(result) == 0 {
 		if target < numbers[0] {
-			return doAll(numbers[0], numbers)
+			return calculator(numbers[0], numbers)
 		} else {
-			return doAll(target+1, numbers)
+			return calculator(target+1, numbers)
 		}
 	}
 	return result
 }
 
-func two(target int, numbers []int) []string {
-	sort.Ints(numbers)
-	var results [][]int
-	var currentCombination []int
-	l := math.MaxInt64
-
-	findCombinationsHelper(target, numbers, 0, currentCombination, &results)
-
-	for _, result := range results {
-		if len(result) < l {
-			l = len(result)
-			currentCombination = result
-		}
-	}
-
+func exact(target int, numbers []int) []string {
+	var (
+		results            = []int{}
+		currentCombination = []int{}
+		l                  = math.MaxInt64
+	)
+	currentCombination = findCombinationsHelper(target, numbers, 0, currentCombination, results, &l)
+	// in case there isn't an exact match return nil
 	if len(currentCombination) == 0 {
 		return nil
 	}
-
+	// if the numbers add up exactly to target
 	return stringify(currentCombination)
 }
 
@@ -61,32 +38,33 @@ func stringify(a []int) (result []string) {
 	for _, i := range a {
 		m[i]++
 	}
-
-	for k, v := range m {
+	for v, k := range m {
 		result = append(result, fmt.Sprintf("%d X %d", k, v))
 	}
 
 	return
 }
 
-func findCombinationsHelper(target int, numbers []int, startIndex int, currentCombination []int, result *[][]int) {
+func findCombinationsHelper(target int, numbers []int, startIndex int, currentCombination []int, shortestResult []int, shortestLength *int) []int {
 	if target == 0 {
 		// Found a valid combination
-		*result = append(*result, append([]int{}, currentCombination...))
-		return
+		if len(currentCombination) < *shortestLength {
+			*shortestLength = len(currentCombination)
+			shortestResult = currentCombination
+		}
+		return shortestResult
 	}
 
 	for i := startIndex; i < len(numbers); i++ {
 		if target >= numbers[i] {
 			// Include the current number in the combination
 			currentCombination = append(currentCombination, numbers[i])
-
 			// Recursively find combinations with the updated target
-			findCombinationsHelper(target-numbers[i], numbers, i, currentCombination, result)
-
+			shortestResult = findCombinationsHelper(target-numbers[i], numbers, i, currentCombination, shortestResult, shortestLength)
 			// Remove the last element to backtrack
 			currentCombination = currentCombination[:len(currentCombination)-1]
 		}
 	}
-}
 
+	return shortestResult
+}
