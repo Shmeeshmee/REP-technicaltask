@@ -45,7 +45,7 @@ function result(){
     <div className='deletePack'>
       <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>Delete Pack</h1>
       <p style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.9em', color: 'lightblue'}}>
-        delete values by using the ID value [GET ALL PACKS > [pack.ID]]
+        delete values by using the ID value [GET ALL PACKS - [pack.ID]]
       </p>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
