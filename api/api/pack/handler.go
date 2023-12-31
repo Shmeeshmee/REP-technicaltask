@@ -40,9 +40,33 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 // DeleteByID - sets a new pack with the input value
 func (h *Handler) Set(w http.ResponseWriter, r *http.Request) {
 	var (
-		p Pack
-		_ = json.NewDecoder(r.Body).Decode(&p)
+		p   Pack
+		err = json.NewDecoder(r.Body).Decode(&p)
 	)
+
+	if err != nil {
+		redis.JsonResponse(
+			w,
+			redis.CreateResponse(
+				p,
+				"please enter number with numeric values / digits [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]",
+				err,
+				405,
+			))
+		return
+	}
+
+	if p.Size <= 0 {
+		redis.JsonResponse(
+			w,
+			redis.CreateResponse(
+				nil,
+				"please enter valid number [>0]",
+				fmt.Errorf("please enter valid number"),
+				405,
+			))
+		return
+	}
 
 	if exists(p.Size) {
 		redis.JsonResponse(

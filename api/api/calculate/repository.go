@@ -13,7 +13,7 @@ func NewRepository() *Repository {
 	return &Repository{}
 }
 
-func (r *Repository) Calculate(amount int) ([]string, error) {
+func (r *Repository) Calculate(amount int) (Response, error) {
 	packs := redis.GetValues("pack")
 	var (
 		val []int

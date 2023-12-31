@@ -57,13 +57,13 @@ func CreateResponse(response any, message string, err error, code int) Response 
 func ErrorResponse(writer http.ResponseWriter, request *http.Request, err error, status int) bool {
 	if err != nil {
 		writer.WriteHeader(status)
-		JsonResponse(writer, errorResponse{
-			ErrorMessage: err.Error(),
-			ErrorCode: errrorCode{
-				Code: status,
-				Name: http.StatusText(status),
-			},
-		})
+		JsonResponse(writer,
+			CreateResponse(
+				nil,
+				fmt.Sprintf("issue with the request [%s]", err),
+				err,
+				status,
+			))
 		return true
 	}
 

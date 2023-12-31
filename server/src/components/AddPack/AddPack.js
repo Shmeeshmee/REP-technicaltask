@@ -50,7 +50,7 @@ function AddPack() {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
         <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
           <label style={{ marginRight: '5px', fontSize: '16px', fontWeight: 'bold' }}>size:</label>
-          <input type="text" value={size} onChange={(event) => setSize(event.target.value)} style={{ fontSize: '16px', padding: '5px', border: '1px solid #9dd9f3', borderRadius: '5px' }} autoFocus />
+          <input type="text" value={size ? size: ""} onChange={(event) => setSize(event.target.value)} style={{ fontSize: '16px', padding: '5px', border: '1px solid #9dd9f3', borderRadius: '5px' }} autoFocus />
         </div>
         <button type="submit" style={{ fontSize: '16px', padding: '5px 10px', border: 'none', borderRadius: '5px', backgroundColor: '#9dd9f3', color: '#fff' }}>Add Pack</button>
       </form>

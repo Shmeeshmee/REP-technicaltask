@@ -43,7 +43,7 @@ func Set(prefix, key, value any) {
 		panic(err)
 	}
 
-	fmt.Printf("Redis variable has been set [%s : %s]\n", k, value)
+	fmt.Printf("Redis variable has been set [%s : %v]\n", k, value)
 }
 
 func Get(prefix, key string) string {

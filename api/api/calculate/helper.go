@@ -2,69 +2,115 @@ package calculate
 
 import (
 	"fmt"
-	"math"
+	"sort"
 )
 
-func calculator(target int, numbers []int) (result []string) {
-	result = exact(target, numbers)
+func calculator(target int, numbers []int) Response {
+	if len(numbers) == 0 {
+		return Response{}
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(numbers)))
 
-	if len(result) == 0 {
-		if target < numbers[0] {
-			return calculator(numbers[0], numbers)
+	m := inc(numbers, &target)
+
+	resStr := []string{}
+	for k, v := range m {
+		if v > 0 {
+			resStr = append(resStr, fmt.Sprintf("%d X %d", v, k))
+		}
+	}
+
+	return Response{
+		Packs: resStr,
+		Total: target,
+	}
+}
+
+func inc(a []int, input *int) map[int]int {
+	for {
+		res := arrs(a, *input)
+		if *input < res[len(res)-1].value {
+			input = &res[len(res)-1].value
+		}
+
+		if m := combine(*input, res, a); m != nil {
+			return m
+		}
+
+		*input++
+	}
+}
+
+type packValue struct {
+	value int
+	final int
+	len   int
+	br    int
+}
+
+func arrs(arr []int, t int) (res []packValue) {
+	for i, a := range arr {
+		var (
+			br = 0
+			q  = 0
+		)
+		if i != 0 {
+			if a%2 == 0 {
+				q = 5
+			} else {
+				q = 10
+			}
+			res[0].br -= q * a
+			res[0].br -= q
 		} else {
-			return calculator(target+1, numbers)
+			br = t / a * a
+			q = t / a
 		}
+		res = append(res, packValue{
+			value: a,
+			final: q * a,
+			len:   q,
+			br:    br,
+		},
+		)
+
 	}
-	return result
+
+	return res
 }
 
-func exact(target int, numbers []int) []string {
-	var (
-		results            = []int{}
-		currentCombination = []int{}
-		l                  = math.MaxInt64
-	)
-	currentCombination = findCombinationsHelper(target, numbers, 0, currentCombination, results, &l)
-	// in case there isn't an exact match return nil
-	if len(currentCombination) == 0 {
-		return nil
+func combine(target int, res []packValue, keys []int) map[int]int {
+	arr := res[0]
+	if arr.final > target {
+		arr.final = target / arr.value * arr.value
 	}
-	// if the numbers add up exactly to target
-	return stringify(currentCombination)
-}
-
-func stringify(a []int) (result []string) {
-	m := map[int]int{}
-	for _, i := range a {
-		m[i]++
-	}
-	for v, k := range m {
-		result = append(result, fmt.Sprintf("%d X %d", k, v))
-	}
-
-	return
-}
-
-func findCombinationsHelper(target int, numbers []int, startIndex int, currentCombination []int, shortestResult []int, shortestLength *int) []int {
-	if target == 0 {
-		// Found a valid combination
-		if len(currentCombination) < *shortestLength {
-			*shortestLength = len(currentCombination)
-			shortestResult = currentCombination
+	for e := arr.final; e >= 0; e -= arr.value {
+		if e > target {
+			continue
 		}
-		return shortestResult
-	}
-
-	for i := startIndex; i < len(numbers); i++ {
-		if target >= numbers[i] {
-			// Include the current number in the combination
-			currentCombination = append(currentCombination, numbers[i])
-			// Recursively find combinations with the updated target
-			shortestResult = findCombinationsHelper(target-numbers[i], numbers, i, currentCombination, shortestResult, shortestLength)
-			// Remove the last element to backtrack
-			currentCombination = currentCombination[:len(currentCombination)-1]
+		if arr.br > e {
+			break
+		}
+		// step one check
+		// if target-e == 0 && e-arr.value < 0 {
+		if target-e == 0 {
+			return map[int]int{
+				keys[0]: e / arr.value,
+			}
+		}
+		// step two check
+		// skip recombining if it's the last arr element
+		// break if target is less that the element value
+		if len(res) == 1 {
+			if target < e {
+				break
+			}
+			continue
+		}
+		if m := combine((target - e), res[1:], keys[1:]); m != nil {
+			m[keys[0]] = e / arr.value
+			return m
 		}
 	}
-
-	return shortestResult
+	return nil
 }

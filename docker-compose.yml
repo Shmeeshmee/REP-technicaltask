@@ -17,14 +17,24 @@ services:
       - DB_PORT=5432
       - DB_NAME=store
       - DEBUG_LEVEL=Debug
-    ports:
-      - 8082:8082
-  server:
+    # ports:
+    #   - 8082:8082
+  fe:
     build:
       context: ./server
       dockerfile: Dockerfile.dev
-    ports:
-      - 3000:3000
+    # ports:
+    #   - 3000:3000
     volumes:
       - /usr/app/node_modules
       - ./server:/usr/app
+  nginx:
+    depends_on:
+      - api
+      - fe
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - '3050:80'
