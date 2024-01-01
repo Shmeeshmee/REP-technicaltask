@@ -121,6 +121,14 @@ func Test_calculator(t *testing.T) {
 			},
 			want: []string{"1 X 900", "899 X 1"},
 		},
+		{
+			name: "test 4.2 - high low no's",
+			args: args{
+				target:  1799,
+				numbers: []int{900, 2, 1},
+			},
+			want: []string{"1 X 900", "449 X 2", "1 X 1"},
+		},
 	}
 	less := func(a, b string) bool { return a < b }
 	for _, tt := range tests {

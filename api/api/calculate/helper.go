@@ -23,13 +23,6 @@ func GCD(a, b int) int {
 	return a
 }
 
-// find Least Common Multiple (LCM) via GCD
-func LCM(a, b int) int {
-	result := a * b / GCD(a, b)
-
-	return result
-}
-
 func calculator(target int, numbers []int) Response {
 	if len(numbers) == 0 {
 		return Response{}
@@ -75,6 +68,7 @@ func arrs(arr []int, t int) (res []packValue) {
 		if i != 0 {
 			tmp := math.MaxInt64
 			for _, j := range arr[:i] {
+				// find Least Common Multiple (LCM) via GCD
 				if a*j/GCD(a, j) < tmp {
 					tmp = a * j / GCD(a, j)
 				}
