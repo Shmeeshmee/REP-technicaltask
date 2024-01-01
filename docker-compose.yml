@@ -2,39 +2,32 @@ version: '3'
 services:
   redis:
     image: 'redis:latest'
-  api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile.dev
-    volumes:
-      - /api:/app
-    environment:
-      - PORT=8082
-      - DB_DRIVER_NAME=postgres
-      - DB_USER=postgres
-      - DB_PASSWORD=password
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=store
-      - DEBUG_LEVEL=Debug
     ports:
-      - 8082:8082
-  fe:
-    build:
-      context: ./server
-      dockerfile: Dockerfile.dev
-    ports:
-      - 3000:3000
-    volumes:
-      - /usr/app/node_modules
-      - ./server:/usr/app
+      - "6379"
   nginx:
     depends_on:
       - api
       - fe
     restart: always
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./nginx
+    image:
+      shmeeshmee/rep-task:latest
     ports:
       - '3050:80'
+  api:
+    image:
+      shmeeshmee/rep-task-be:latest
+    environment:
+      - PORT=8082
+      - REDIS_PORT=6379
+      - REDIS_DRIVER=redis
+    ports:
+      - "8082:8082"
+  fe:
+    stdin_open: true
+    image:
+      shmeeshmee/rep-task-fe:latest
+    environment:
+      - API_PORT=8082
+      - API_HOST=api
+    ports:
+      - "3000:3000"

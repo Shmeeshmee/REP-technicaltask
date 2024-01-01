@@ -6,7 +6,7 @@ function DeletePack() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const url = `http://api:8082/pack/${id}`;
+    const url = `/api/pack/${id}`;
 
     const response = await fetch(url, {
       method: 'GET',

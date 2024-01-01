@@ -42,7 +42,7 @@ export default function GetAllPacks() {
 
 
   useEffect(() => {
-    let url = "http://localhost:8082/packs";
+    let url = "/api/packs";
     fetch(url)
       .then((response) => response.json())
       .then((data) => setPacks(data.response))

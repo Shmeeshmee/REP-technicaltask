@@ -7,7 +7,7 @@ function AddPack() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const response = await fetch('http://localhost:8082/pack', {
+    const response = await fetch(`/api/pack`, {
       method: 'POST',
       body: JSON.stringify({
         size: Number(size),
@@ -18,6 +18,7 @@ function AddPack() {
 
     setRes(data)
   }
+
 
   function err() {
     if (res.error) {

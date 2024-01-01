@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../docker-compose.yml
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: fe
+  name: fe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: fe
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ../docker-compose.yml
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: fe
+    spec:
+      containers:
+        - env:
+            - name: API_HOST
+              value: api
+            - name: API_PORT
+              value: "8082"
+          image: shmeeshmee/rep-task-fe:latest
+          name: fe
+          ports:
+            - containerPort: 3000
+          resources: {}
+          stdin: true
+      restartPolicy: Always
+status: {}

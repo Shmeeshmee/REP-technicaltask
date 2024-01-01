@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"fmt"
+	"re-parteners-tech-task/config"
 
 	"github.com/go-redis/redis"
 )
@@ -12,8 +13,10 @@ var ctx = context.Background()
 var client *redis.Client
 
 func init() {
+
+	cfg := config.NewConfig()
 	client = redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
+		Addr:     fmt.Sprintf("%s:%s", cfg.Redis.Driver, cfg.Redis.Port),
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})

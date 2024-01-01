@@ -7,7 +7,7 @@ function OrderPacks() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const url = `http://localhost:8082/calculate/${id}`;
+    const url = `/api/calculate/${id}`;
 
     const response = await fetch(url, {
       method: 'GET',
