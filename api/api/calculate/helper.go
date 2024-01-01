@@ -2,8 +2,33 @@ package calculate
 
 import (
 	"fmt"
+	"math"
 	"sort"
 )
+
+type packValue struct {
+	value int
+	final int
+	len   int
+	br    int
+}
+
+// greatest common divisor (GCD) via Euclidean algorithm
+func GCD(a, b int) int {
+	for b != 0 {
+		t := b
+		b = a % b
+		a = t
+	}
+	return a
+}
+
+// find Least Common Multiple (LCM) via GCD
+func LCM(a, b int) int {
+	result := a * b / GCD(a, b)
+
+	return result
+}
 
 func calculator(target int, numbers []int) Response {
 	if len(numbers) == 0 {
@@ -41,13 +66,6 @@ func inc(a []int, input *int) map[int]int {
 	}
 }
 
-type packValue struct {
-	value int
-	final int
-	len   int
-	br    int
-}
-
 func arrs(arr []int, t int) (res []packValue) {
 	for i, a := range arr {
 		var (
@@ -55,13 +73,14 @@ func arrs(arr []int, t int) (res []packValue) {
 			q  = 0
 		)
 		if i != 0 {
-			if a%2 == 0 {
-				q = 5
-			} else {
-				q = 10
+			tmp := math.MaxInt64
+			for _, j := range arr[:i] {
+				if a*j/GCD(a, j) < tmp {
+					tmp = a * j / GCD(a, j)
+				}
 			}
+			q = tmp/a - 1
 			res[0].br -= q * a
-			res[0].br -= q
 		} else {
 			br = t / a * a
 			q = t / a
