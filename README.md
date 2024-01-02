@@ -6,4 +6,4 @@ run with dokcer compose:
 
 docker compose up --build
 
-app will get exposed to port 3000
+app will get exposed to port 3050
